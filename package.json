@@ -1,0 +1,16 @@
+{
+  "name": "project",
+  "version": "1.0.0",
+  "description": "Mini_Project",
+  "main": "index.js",
+  "scripts": {
+    "test": "Dibimbing_Mini-Project",
+    "start": "nodemon index.js"
+  },
+  "author": "Jati cindy saputra",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "router": "^1.3.8"
+  }
+}

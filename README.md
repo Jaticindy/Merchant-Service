@@ -1,1 +1,27 @@
-# Merchant-Service
+# Database Mysql : 
+create database mini_project;
+use mini_project;
+
+CREATE TABLE `merchant` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `password` varchar(20) DEFAULT NULL,
+  `name` varchar(45) DEFAULT NULL,
+  `join_date` date DEFAULT NULL,
+  `phone_number` bigint(14) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ;
+ALTER TABLE `merchant`
+MODIFY COLUMN `name` VARCHAR(45) DEFAULT NULL UNIQUE;
+
+ALTER TABLE `merchant`
+MODIFY COLUMN `phone_number` VARCHAR(30)  NULL;
+
+create table Product (
+`id` int auto_increment primary key,
+`name` varchar(45),
+`quantity` int,
+`Price` varchar (25)
+);
+ALTER TABLE `product`
+MODIFY COLUMN `name` VARCHAR(45) DEFAULT NULL UNIQUE;
+alter table `product` MODIFY COLUMN `quantity` varchar(35);

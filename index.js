@@ -12,6 +12,7 @@ app.use(bodyParser.json())
 app.use('/product',productRouters)
 app.use('/merchant',merchantRouters)
 
+
+
+
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
-
-

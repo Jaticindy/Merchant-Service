@@ -1,42 +1,38 @@
 const express = require('express')
 const router = express.Router()
-
-const bodyParser = require('body-Parser')
 const db = require('../config')
 const respons = require ('../respons')
-const auth = require ('basic-auth')
-router.use(bodyParser.json());
+const basicAuth = require('basic-auth')
+const auth = require ('../middelware/logs')
 
-//Get
-router.get('/', (req, res) => {
-    var user = auth(req)
-    if (user != undefined) {
-        if (user.name == 'dibimbing' && user.pass == 'pass') {
-            // flow kode yang udah authorized
-            const sql = "SELECT * FROM product"
-            console.log('Get is Running..')
 
-            // if (error) {
-            //     return respons(500, "Invalid", "Server Error", res);
-            // } 
-
-               db.query(sql, (error,result)=>{
-                   if(error) {
-                    console.log(error)
-                   respons(500,"Invalid","Server Error",res)
-                   }else
-                   //data hasil dari mysql
-                   respons(200,result,"Get in Product",res)
-                })
-            return
-        }
+  router.get('/', auth, (req, res) => {
+    const user = basicAuth(req)
+    
+     // Mendapatkan id_merchant dari pengguna yang terautentikasi
+    
+  
+    // Periksa apakah pengguna memiliki hak akses sebagai merchant
+    if (user.name == 'merchant' && user.pass == 'password') {
+      console.log('Invalid credentials')
+      // Jika tidak, kirim respons error
+      return respons(401, 'Invalid Credentials', 'Unauthorized', res);
     }
-    res.status(401)
-    res.send("Unauthorized")
-})
-
+  
+    // Jika berhasil melewati pengecekan otorisasi, ambil data product
+    const sql = `SELECT * FROM product`;
+    db.query(sql, (error, result) => {
+      if (error) {
+        console.log(error)
+        return respons(500, "Invalid", "Server Error", res);
+      } else {
+        return respons(200, result, "Get in Product", res);
+      }
+    });
+  });
   
 
+       
 
 //Post
   router.post('/upload',(req,res)=>{
@@ -77,10 +73,13 @@ router.get('/', (req, res) => {
 
 
 //Put 
-router.put('/upload/edit/:id',(req,res)=>{
-    const id = req.params.id;
-    const {name,quantity,Price}=req.body
-    const sql = `UPDATE product SET name='${name}', quantity='${quantity}', Price='${Price}' WHERE id = ${id}`;
+router.put('/upload/edit/:id',auth,(req,res)=>{
+  const user = basicAuth(req)
+  console.log(user)
+
+  const { id } = req.params;
+  const {name, quantity, Price } = req.body;
+  const sql = `UPDATE product SET name = ?, quantity = ?, Price = ? WHERE id = ?`;
 
     if (Object.entries (req.body).length !==3 ||
     !("name" in req.body) ||
@@ -91,41 +90,36 @@ router.put('/upload/edit/:id',(req,res)=>{
     return  
     }
 
-   db.query(sql,(error,result)=>{
-    if(error) respons(404,"Invalid","Not Found",res)
-        console.log(result)
-
-    if(result.affectedRows){ 
-        const data = {
-            isSuccess:result.affectedRows,
-        }
-        respons(200,data,"Edit Success",res)
+  db.query(sql, [name, quantity, Price, id], (error, result) =>{
+    if(error) {
+    respons(404,"Invalid","Not Found",res)
+        console.log(error)
+return
+   }
+    else{            
+        respons(200,result,"Edit Success",res)
+        return
     }
   })   
 })
 
 
 //Delete
-router.delete('/upload/delete/:id',(req,res)=>{
-  const {id} = req.body
- const sql= `DELETE FROM product WHERE id = ${id}`;
+router.delete('/upload/delete/:id',auth, (req, res) => {
+  const user = basicAuth(req)
+ 
+  const {id} = req.params
+  const sql= `DELETE FROM product WHERE id = ?`
 
-
- db.query(sql, (error, result) => {
+  db.query(sql,[id],(error, result) => {
     if (error) {
-        return respons(500, "Invalid", "Server Error", res);
-    } 
-
-  if (result.affectedRows) { 
-    const data = {
-      isSuccess: result.affectedRows,
+      console.log(error)
+      return respons(500, "Invalid", "Server Error", res);
+    } else {
+      return respons(200, result, 'Get in Product', res);
     }
-    respons(200, data, "Successfully Deleted", res);
-  } else {
-    respons(404, {}, "Data not found", res);
-    console.log(result)
-  }
-})   
-})
+  });
+});
+
 
 module.exports = router

@@ -1,44 +1,40 @@
 const express = require('express')
 const router = express.Router()
-
-
-//const bodyParser = require('body-Parser')
 const db = require('../config')
 const respons = require ('../respons')
-const auth = require ('basic-auth')
-
+const basicAuth = require('basic-auth')
+const saltRounds = 10
+const auth = require ('../middelware/logs')
 
 
 router.get('/', (req, res) => {
-    var user = auth(req)
-    if (user != undefined) {
-        if (user.name == 'dibimbing' && user.pass == 'pass') {
-            // flow kode yang udah authorized
-            const sql = "SELECT * FROM merchant"
+ 
+            const sql = `SELECT * FROM merchant`
             console.log('Get is Running..')
 
-               db.query(sql, (error,result)=>{
-                   if(error) {
-                    console.log(error)
-                   respons(404,error,"Server Not Found",res)
-                   }else
-                   //data hasil dari mysql
-                   respons(200,result,"Get in merchant",res)
-                })
-            return
-        }
-    }
-    console.log('Unauthorized')
-    res.status(401).send('Unauthorized');
-    
-})
+               db.query(sql,(error,result)=>{
+                if (error) {
+                  console.log(error);
+                  respons(404, error, 'Server Not Found', res);
+                  return;
+                }
+                if (result.length === 0) {
+                  respons(401, 'No Data Found', 'Unauthorized', res);
+                  return;
+                }
+                respons(200, result, 'Get in merchant', res);
+              });
+            });
+
   
 
-
-router.post('/upload',(req,res)=>{
+// Registrasi
+router.post('/registrasi',(req,res)=>{
     const {password,name,join_date,phone_number}=req.body
+
     const sql = `INSERT INTO merchant (password, name, join_date, phone_number) 
-    VALUES ('${password}', '${name}', '${join_date}', '${phone_number}')`
+    VALUES ('${password}', '${name}', '${join_date}', '${phone_number}')`;
+
 
     if (Object.entries (req.body).length !==4 ||
     !("password" in req.body) ||
@@ -72,68 +68,61 @@ router.post('/upload',(req,res)=>{
 })
 
 
+router.put('/edit/:id', auth, (req, res) => {
+  const user = basicAuth(req)
+  const id = req.params.id
+  const { password, name, join_date, phone_number } = req.body
 
+  // Periksa apakah semua field pada body request tersedia
+  if (!password || !name || !join_date || !phone_number) {
+    return res.status(400).json({ error: "Bad Request" });
+  }
 
-router.put('/upload/edit/:id',(req,res)=>{
-    const id = req.params.id;
-    const {password,name,join_date,phone_number}=req.body
-    const sql = `UPDATE merchant SET password='${password}', name='${name}', join_date='${join_date}',
-                 phone_number='${phone_number}' WHERE id = ${id}`;
-   
-                 if (Object.entries (req.body).length !==4 ||
-                 !("password" in req.body) ||
-                 !("name" in req.body) ||
-                 !("join_date" in req.body) ||
-                 !("phone_number" in req.body)
-                 ){
+  const sql = `UPDATE merchant SET password = ?, name = ?, join_date = ?, phone_number = ? WHERE id = ?`
+  const values = [password,name, join_date, phone_number, id]
+  
 
-   respons(404,"Invalid","Not Found",res)
-    return  
+  db.query(sql, values, (error, result) => {
+    if (error) {
+      console.log(error);
+      return res.status(500).json({ error: "Internal Server Error" });
     }
-   
-    db.query(sql,(error,result)=>{
-    if(error) 
-    respons(404,"Invalid","Not Found",res)
-        console.log(result)
 
-    if(result.affectedRows){ 
-        const data = {
-            isSuccess:result.affectedRows,
-        }
-        respons(200,data,"Edit Success",res)
-        console.log(data)
+    if (result.affectedRows) {
+      const data = {
+        isSuccess: result.affectedRows,
+      };
+      return res.status(200).json(data);
+    } else {
+      return res.status(404).json({ error: "Not Found" });
     }
-  })   
+  });
+});
+
+
+
+router.delete('/upload/delete/:id',auth,(req,res)=>{
+  const {id} = req.body
+ const sql= `DELETE FROM merchant WHERE id = ${id}`
+
+
+ db.query(sql, (error, result) => {
+    if (error) {
+        return respons(500, "Invalid", "Server Error", res);
+    } 
+
+  if (result.affectedRows) { 
+    const data = {
+      isSuccess: result.affectedRows,
+    }
+    respons(200, data, "Successfully Deleted", res);
+  } else {
+    respons(404, {}, "Data not found", res);
+    console.log(result)
+  }
+})   
 })
 
 
-router.delete('/upload/delete/:id', (req, res) => {
-    const id = req.params.id
-  
-
-    if (!id || !("password" in req.body)) {
-      return res.status(404).json({ error: "ID or password not found" });
-    }  
-    
-    const sql = `DELETE FROM merchant WHERE id = ${id}`;
-
-    
-    db.query(sql, (error, result) => {
-        if (error) {
-            return respons(500, "Invalid", "Server Error", res);
-        } 
-
-      if (result.affectedRows) { 
-        const data = {
-          isSuccess: result.affectedRows,
-        }
-        respons(200, data, "Successfully Deleted", res);
-      } else {
-        respons(404, (`Error id: ${id}`), "Data not found", res);
-        console.log(result)
-      }
-    })   
-  });
-  
 
 module.exports = router

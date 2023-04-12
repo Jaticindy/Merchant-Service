@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 const port = 3000
-const bodyParser = require('body-Parser')
+const bodyParser = require('body-parser')
 const productRouters = require('./routers/product.js')
 const merchantRouters = require('./routers/merchant.js')
 

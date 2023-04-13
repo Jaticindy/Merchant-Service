@@ -19,34 +19,34 @@ Buka terminal atau command prompt, kemudian masuk ke direktori program yang suda
 Jalankan perintah npm install untuk menginstall semua package yang dibutuhkan
 Pastikan MySQL sudah berjalan, kemudian buatlah sebuah database dengan nama mini_project dengan perintah create database mini_project;
 Pada database mini_project, buatlah sebuah tabel merchant dengan perintah berikut:
-  CREATE TABLE `merchant` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `password` varchar(20) DEFAULT NULL,
-  `name` varchar(45) DEFAULT NULL,
-  `join_date` date DEFAULT NULL,
-  `phone_number` bigint(14) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-)
+ - CREATE TABLE `merchant` (
+ - `id` int(11) NOT NULL AUTO_INCREMENT,
+ - `password` varchar(20) DEFAULT NULL,
+ - `name` varchar(45) DEFAULT NULL,
+ - `join_date` date DEFAULT NULL,
+ - `phone_number` bigint(14) DEFAULT NULL,
+ - PRIMARY KEY (`id`)
+- )
 Modifikasi kolom name pada tabel merchant menjadi UNIQUE dengan perintah berikut:
-ALTER TABLE `merchant`
+- ALTER TABLE `merchant`
 MODIFY COLUMN `name` VARCHAR(45) DEFAULT NULL UNIQUE;
 Modifikasi kolom phone_number pada tabel merchant menjadi NULL dengan perintah berikut:
 sql
-ALTER TABLE `merchant`
+- ALTER TABLE `merchant`
 MODIFY COLUMN `phone_number` VARCHAR(30)  NULL;
 Pada database mini_project, buatlah sebuah tabel Product dengan perintah berikut:
-CREATE TABLE `product` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(45) DEFAULT NULL,
-  `quantity` int(11) DEFAULT NULL,
-  `Price` varchar(25) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-)
+- CREATE TABLE `product` (
+ - `id` int(11) NOT NULL AUTO_INCREMENT,
+ - `name` varchar(45) DEFAULT NULL,
+ - `quantity` int(11) DEFAULT NULL,
+ - `Price` varchar(25) DEFAULT NULL,
+ - PRIMARY KEY (`id`)
+- )
 Modifikasi kolom name pada tabel Product menjadi UNIQUE dengan perintah berikut:
-ALTER TABLE `product`
+- ALTER TABLE `product`
 MODIFY COLUMN `name` VARCHAR(45) DEFAULT NULL UNIQUE
 Modifikasi kolom quantity pada tabel Product menjadi VARCHAR(35) dengan perintah berikut:
-ALTER TABLE `product` MODIFY COLUMN `quantity` varchar(35)
+- ALTER TABLE `product` MODIFY COLUMN `quantity` varchar(35)
 Konfigurasikan koneksi database pada file config.js
 Jalankan program dengan perintah npm start
 Program siap digunakan

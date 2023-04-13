@@ -1,4 +1,4 @@
-Mini Project CRUD Product
+# Mini Project CRUD Product
 
 Deskripsi Program
 Program ini adalah sebuah aplikasi CRUD sederhana yang digunakan untuk mengelola data produk. Aplikasi ini dibuat menggunakan bahasa pemrograman JavaScript dengan menggunakan framework Express dan database MySQL.

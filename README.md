@@ -60,3 +60,21 @@ DELETE /upload/delete/:id: Untuk menghapus produk
 # Middlewares
 auth: Middleware untuk memeriksa otorisasi pengguna. Hanya pengguna yang memiliki hak akses sebagai merchant yang bisa menggunakan API ini.
 logs: Middleware untuk mencatat setiap request yang masuk ke dalam sebuah file log dengan format .log.
+
+# Jika ingin menguji API dengan menggunakan Postman, Anda bisa menggunakan endpoint-endpoint berikut:
+1. GET /api/products
+   Untuk mendapatkan semua produk yang ada di database.
+
+2. POST /api/products
+   Untuk menambahkan produk baru ke database.
+   Parameter yang diperlukan: name, quantity, price.
+
+3. GET /api/products/:id
+   Untuk mendapatkan detail produk berdasarkan ID-nya.
+
+4. PUT /api/products/:id
+   Untuk mengubah detail produk berdasarkan ID-nya.
+   Parameter yang diperlukan: name, quantity, price.
+
+5. DELETE /api/products/:id
+   Untuk menghapus produk dari database berdasarkan ID-nya
